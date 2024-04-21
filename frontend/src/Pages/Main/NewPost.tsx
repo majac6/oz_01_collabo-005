@@ -11,11 +11,12 @@ function NewPost() {
       try {
         const response = await instance.get("api/clubs/");
         setClub(response.data.results);
-        console.log(response.data.results);
+        console.log("NewPost : ", response.data.results);
       } catch (error) {
         console.log("Error fetching", error);
       }
     }
+
     newPosts();
     console.log(club);
   }, []);
@@ -24,27 +25,30 @@ function NewPost() {
   return (
     <div className="">
       <div className="clubCategoryBox">
-        {club.slice(0, 6).map((clubName, index) => (
-          <Link
-            to={`/meetHome/${clubName.id}`}
-            className="newPostBox"
-            key={index}
-          >
-            <img
-              src={clubName.image ? clubName.image : import.meta.env.VITE_ICON}
-              alt="포스트이미지"
-            />
-            <div className="postWriteBox">
-              <div className="postTitle">{clubName.name}</div>
-              <div className="postContent">{clubName.description}</div>
-            </div>
+        {Array.isArray(club) &&
+          club.slice(0, 6).map((clubName, index) => (
+            <Link
+              to={`/meetHome/${clubName.id}`}
+              className="newPostBox"
+              key={index}
+            >
+              <img
+                src={
+                  clubName.image ? clubName.image : import.meta.env.VITE_ICON
+                }
+                alt="포스트이미지"
+              />
+              <div className="postWriteBox">
+                <div className="postTitle">{clubName.name}</div>
+                <div className="postContent">{clubName.description}</div>
+              </div>
 
-            <div className="clubUpdatedDatePlace">
-              <div>{clubName.frequent_place}</div>
-              <div>{clubName.updated_at.slice(0, 10)}</div>
-            </div>
-          </Link>
-        ))}
+              <div className="clubUpdatedDatePlace">
+                <div>{clubName.frequent_place}</div>
+                <div>{clubName.updated_at.slice(0, 10)}</div>
+              </div>
+            </Link>
+          ))}
       </div>
     </div>
   );

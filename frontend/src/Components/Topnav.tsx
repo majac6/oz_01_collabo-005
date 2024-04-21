@@ -1,36 +1,36 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { FaAngleDown, FaUser } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import UserContext from "../Context/Authuser";
 import "./Topnav.css";
+import { AuthData } from "../App";
 
 function TopNav(): JSX.Element {
+  const { userInfo, setUserInfo } = useContext<AuthData>(UserContext);
+
   const [showSearch, setShowSearch] = useState<boolean>(false);
   const [showMenu, setShowMenu] = useState<boolean>(false);
-  const [isLogin, setIsLogin] = useState<string | null>("");
-  const { userInfo, setUserInfo }: any = useContext(UserContext);
+  const [isLogin, setIsLogin] = useState<boolean>(
+    userInfo?.accessToken ? true : false,
+  );
 
   useEffect(() => {
-    const token = localStorage.getItem("refreshToken");
-    setIsLogin(token);
-    setUserInfo();
-  }, [userInfo]); // 컴포넌트가 처음 렌더링될 때 한 번만 실행 /refresh토큰이 달라질때도 제렌더링
-
-  // const toggleSearch = (): void => {
-  //   setShowSearch(!showSearch);
-  // };
+    if (userInfo === null) setIsLogin(false);
+    else setIsLogin(true);
+  }, [userInfo]);
 
   const toggleMenu = (): void => {
     setShowMenu(!showMenu);
   };
 
   const logoutHandler = () => {
+    // 여기에서 로그아웃 api 콜 해야함.
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("first_name");
     localStorage.removeItem("last_name");
-    setIsLogin(null); // 로그아웃 후에 상태를 업데이트하여 다시 렌더링되도록 합니다.
+    setUserInfo(null);
     alert("로그아웃 되었습니다.");
   };
 

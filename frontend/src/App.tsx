@@ -17,11 +17,55 @@ import SignUp from "./Pages/Signup";
 import Success from "./Pages/Signup/Success";
 import PrivateRoute from "./Privateroute/Privateroute";
 
-function App() {
-  const [userInfo, setUserInfo]: any = useState({
+export type AuthData = {
+  first_name: string | null;
+  last_name: string | null;
+  refreshToken: string | null;
+  accessToken: string | null;
+  pk: number | null;
+} | null;
+
+export function setAuthDataToLocalStorage(data: {
+  first_name: string;
+  last_name: string;
+  refreshToken: string;
+  accessToken: string;
+  pk: number;
+}) {
+  localStorage.setItem("first_name", data.first_name);
+  localStorage.setItem("last_name", data.last_name);
+  localStorage.setItem("refreshToken", data.refreshToken);
+  localStorage.setItem("accessToken", data.accessToken);
+  localStorage.setItem("pk", String(data.pk));
+  return data;
+}
+
+function getAuthDataFormLocalStorage(): AuthData {
+  let isAuth = true;
+  const result = {
     first_name: localStorage.getItem("first_name"),
     last_name: localStorage.getItem("last_name"),
+    refreshToken: localStorage.getItem("refreshToken"),
+    accessToken: localStorage.getItem("accessToken"),
+    pk: Number(localStorage.getItem("pk")),
+  };
+  Object.keys(result).forEach((key) => {
+    if (result[key] === null) {
+      isAuth = false;
+    }
   });
+
+  if (isAuth) {
+    return result;
+  } else {
+    return null;
+  }
+}
+
+function App() {
+  const [userInfo, setUserInfo] = useState<AuthData>(
+    getAuthDataFormLocalStorage(),
+  );
 
   return (
     <div className="App">

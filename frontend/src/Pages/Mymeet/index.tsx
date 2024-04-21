@@ -1,11 +1,14 @@
 import axios from "axios";
-import { useEffect, useState } from "react"; // 추가
+import { useContext, useEffect, useState } from "react"; // 추가
 import { HiUsers } from "react-icons/hi";
 import { MdRemoveRedEye } from "react-icons/md";
 
 import dummy from "./dummy.json";
 import "./index.css";
 import TabButton from "./TabButton";
+import instance from "../../Apis/axios.ts";
+import UserContext from "../../Context/Authuser.tsx";
+import { AuthData } from "../../App.tsx";
 
 interface DummyItem {
   url: string;
@@ -13,14 +16,30 @@ interface DummyItem {
 }
 
 function ShowMyMeet(): JSX.Element {
+  const authData = useContext(UserContext);
+
   useEffect(() => {
-    axios({
-      method: "get",
-      url: "https://b63dca28-1170-4ac5-91c8-65e06ade5071.mock.pstmn.io/list",
-      responseType: "json",
-    }).then(function (response) {
-      console.log(response.data);
-    });
+    if (authData?.userInfo === null) return;
+    const { pk, accessToken } = authData.userInfo;
+    // 토큰을 어떻게 줘야 하나요?
+
+    instance
+      .get(`api/users/${pk}/clubs`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          // "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+      });
+    // axios({
+    //   method: "get",
+    //   url: "https://b63dca28-1170-4ac5-91c8-65e06ade5071.mock.pstmn.io/list",
+    //   responseType: "json",
+    // }).then(function (response) {
+    //   console.log(response.data);
+    // });
   }, []);
 
   return (
@@ -39,6 +58,7 @@ function ShowMyMeet(): JSX.Element {
     </>
   );
 }
+
 function ShowMyFeed(): JSX.Element {
   return (
     <div className="FeedArticleBox">
@@ -100,6 +120,7 @@ function ShowMySchedule(): JSX.Element {
     </>
   );
 }
+
 function MyMeet() {
   const [selectedTab, setSelectedTab] = useState<string>("일정"); // 추가
 
